@@ -1,0 +1,32 @@
+
+{% extends 'base.html' %}
+{% block title %}הוסף קופסא{% endblock %}
+
+{% block content %}
+
+<div class="card shadow p-4 form-card">
+
+<h2 class="mb-4">➕ הוסף קופסא</h2>
+
+<form action="{{ url_for('add_box_route') }}" method="post" enctype="multipart/form-data">
+
+<div class="mb-3">
+<label class="form-label">שם הקופסא</label>
+<input type="text" name="name" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">תמונה</label>
+<input type="file" name="photo" accept="image/*" capture="environment" class="form-control">
+</div>
+
+<div class="d-flex gap-2 flex-wrap">
+<button class="btn btn-primary">צור קופסא</button>
+<a href="{{ url_for('index') }}" class="btn btn-secondary">חזרה</a>
+</div>
+
+</form>
+
+</div>
+
+{% endblock %}

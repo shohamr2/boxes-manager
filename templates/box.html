@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ box.name }}{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">📦 {{ box.name }}</h2>
+
+
+<!-- הוספת פריט -->
+
+<div class="card shadow-sm p-3 mb-4" id="addItemForm">
+
+<h5 class="mb-3">➕ הוסף פריט</h5>
+
+<form action="{{ url_for('add_item_route', box_id=box.id) }}" method="post" enctype="multipart/form-data">
+
+<div class="row g-2">
+
+<div class="col-12 col-md-5">
+<input type="text" name="name" class="form-control" placeholder="שם הפריט" required>
+</div>
+
+<div class="col-6 col-md-3">
+<input type="number" name="quantity" class="form-control" placeholder="כמות" min="1" value="1">
+</div>
+
+<div class="col-6 col-md-4">
+<input type="file" name="photo" class="form-control">
+</div>
+
+</div>
+
+<button class="btn btn-primary mt-3">הוסף פריט</button>
+
+</form>
+
+</div>
+
+
+
+<!-- רשימת פריטים -->
+
+<div class="row g-3">
+
+{% for item in items %}
+
+<div class="col-6 col-md-4 col-lg-3">
+
+<div class="card shadow-sm h-100">
+
+{% if item.photo and item.photo != 'none' %}
+<img src="/static/images/{{ item.photo }}" class="card-img-top preview-image">
+{% endif %}
+
+<div class="card-body text-center">
+
+<h6>{{ item.name }}</h6>
+
+
+<!-- כפתורי כמות -->
+
+<div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+
+<a href="{{ url_for('decrease', item_id=item.id) }}"
+class="btn btn-sm btn-outline-secondary">−</a>
+
+<strong>{{ item.quantity }}</strong>
+
+<a href="{{ url_for('increase', item_id=item.id) }}"
+class="btn btn-sm btn-outline-secondary">+</a>
+
+</div>
+
+
+<!-- העברת פריט -->
+
+<form action="{{ url_for('move_item', item_id=item.id) }}" method="post">
+
+<select name="box_id" class="form-select form-select-sm mb-1">
+
+{% for b in boxes %}
+
+<option value="{{ b.id }}">
+{{ b.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<button class="btn btn-sm btn-outline-primary w-100">
+העבר קופסא
+</button>
+
+</form>
+
+
+<!-- פעולות -->
+
+<div class="d-flex justify-content-center gap-2 mt-2">
+
+<a href="{{ url_for('edit_item', item_id=item.id) }}"
+class="btn btn-sm btn-outline-secondary">✏</a>
+
+<a href="{{ url_for('delete_item', item_id=item.id) }}"
+class="btn btn-sm btn-outline-danger"
+onclick="return confirm('למחוק את הפריט {{ item.name }}?')">
+🗑
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<!-- כפתור + צף -->
+
+<a href="#addItemForm" class="fab">+</a>
+
+{% endblock %}

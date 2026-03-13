@@ -1,0 +1,66 @@
+
+{% extends 'base.html' %}
+{% block title %}חיפוש{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">🔍 תוצאות חיפוש עבור "{{ query }}"</h3>
+
+<form action="{{ url_for('search') }}" method="get" class="mb-4">
+<div class="input-group input-group-lg">
+<input type="text" name="q" class="form-control" placeholder="חפש פריט או קופסא" value="{{ query }}">
+<button class="btn btn-primary">חפש</button>
+</div>
+</form>
+
+<div class="row g-4">
+
+<div class="col-12 col-lg-6">
+<div class="card shadow-sm h-100">
+<div class="card-body">
+<h4 class="mb-3">קופסאות</h4>
+
+{% for box in boxes %}
+<div class="search-result-card">
+<div>
+<strong>📦 {{ box.name }}</strong>
+<div class="text-muted">קופסא {{ box.id }}</div>
+</div>
+<a href="{{ url_for('box', box_id=box.id) }}" class="btn btn-sm btn-outline-primary">
+פתח
+</a>
+</div>
+{% else %}
+<div class="text-muted">לא נמצאו קופסאות.</div>
+{% endfor %}
+
+</div>
+</div>
+</div>
+
+<div class="col-12 col-lg-6">
+<div class="card shadow-sm h-100">
+<div class="card-body">
+<h4 class="mb-3">פריטים</h4>
+
+{% for item in items %}
+<div class="search-result-card">
+<div>
+<strong>🧷 {{ item.name }}</strong>
+<div class="text-muted">{{ item.box.name }} | כמות: {{ item.quantity }}</div>
+</div>
+<a href="{{ url_for('box', box_id=item.box.id) }}" class="btn btn-sm btn-outline-primary">
+פתח קופסא
+</a>
+</div>
+{% else %}
+<div class="text-muted">לא נמצאו פריטים.</div>
+{% endfor %}
+
+</div>
+</div>
+</div>
+
+</div>
+
+{% endblock %}

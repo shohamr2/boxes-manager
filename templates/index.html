@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}כל הקופסאות{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">📦 כל הקופסאות</h2>
+
+<div class="mb-4">
+
+<input
+type="text"
+id="searchInput"
+class="form-control"
+placeholder="🔍 חפש פריט או קופסא">
+
+</div>
+
+<div id="searchResults" class="row g-3 mb-4"></div>
+<!-- הוספה מהירה -->
+
+<div id="quickAdd" style="display:none" class="card shadow-sm p-3 mb-4">
+
+<h5 class="mb-3">➕ הוסף פריט</h5>
+
+<select id="quickBox" class="form-select mb-2">
+
+{% for row in boxes_data %}
+
+<option value="{{ row.box.id }}">
+{{ row.box.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<button class="btn btn-primary w-100" onclick="goToBox()">
+בחר קופסא
+</button>
+
+</div>
+
+
+
+<!-- קופסאות -->
+
+<div class="row g-4">
+
+{% for row in boxes_data %}
+
+<div class="col-6 col-md-4 col-lg-3">
+
+<div class="card shadow-sm h-100">
+
+{% if row.box.photo and row.box.photo != 'none' %}
+<img src="/static/images/{{ row.box.photo }}" class="card-img-top preview-image">
+{% endif %}
+
+<div class="card-body text-center">
+
+<h5 class="card-title">
+📦 {{ row.box.name }}
+</h5>
+
+<p class="text-muted">
+
+{{ row.count }} סוגי פריטים
+<br>
+סה״כ {{ row.total_quantity }}
+
+</p>
+
+
+<a href="{{ url_for('box', box_id=row.box.id) }}"
+class="btn btn-outline-primary btn-sm mb-2">
+
+פתח קופסא
+
+</a>
+
+
+<div class="d-flex justify-content-center gap-2">
+
+<a href="{{ url_for('edit_box', box_id=row.box.id) }}"
+class="btn btn-sm btn-outline-secondary">
+
+✏
+
+</a>
+
+<a href="{{ url_for('delete_box', box_id=row.box.id) }}"
+class="btn btn-sm btn-outline-danger"
+onclick="return confirm('למחוק את הקופסא {{ row.box.name }}?')">
+🗑
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<!-- כפתור + צף -->
+
+<a href="?addItem=1" class="fab">+</a>
+
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search)
+
+if(params.get("addItem")){
+    document.getElementById("quickAdd").style.display = "block"
+}
+
+function goToBox(){
+
+const boxId = document.getElementById("quickBox").value
+
+window.location.href = "/box/" + boxId
+
+}
+
+</script>
+
+<script>
+
+const searchInput = document.getElementById("searchInput")
+const results = document.getElementById("searchResults")
+
+searchInput.addEventListener("input", async function(){
+
+const q = this.value.trim()
+
+if(q.length === 0){
+results.innerHTML = ""
+return
+}
+
+const res = await fetch("/api/search?q=" + encodeURIComponent(q))
+const data = await res.json()
+
+results.innerHTML = ""
+
+
+
+/* קופסאות */
+
+data.boxes.forEach(box => {
+
+results.innerHTML += `
+<div class="col-6 col-md-4 col-lg-3">
+
+<div class="card shadow-sm">
+
+<div class="card-body text-center">
+
+<h6>📦 ${box.name}</h6>
+
+<a href="${box.url}" class="btn btn-sm btn-outline-primary">
+פתח קופסא
+</a>
+
+</div>
+
+</div>
+
+</div>
+`
+
+})
+
+
+
+/* פריטים */
+
+data.items.forEach(item => {
+
+results.innerHTML += `
+<div class="col-6 col-md-4 col-lg-3">
+
+<div class="card shadow-sm">
+
+<div class="card-body text-center">
+
+<h6>${item.name}</h6>
+
+<p class="text-muted">
+בקופסא: ${item.box_name}
+</p>
+
+<a href="${item.url}" class="btn btn-sm btn-outline-primary">
+פתח
+</a>
+
+</div>
+
+</div>
+
+</div>
+`
+
+})
+
+})
+
+</script>
+
+{% endblock %}
+
