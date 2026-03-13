@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, func
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, func, Identity
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship, joinedload
 
 Base = declarative_base()
@@ -8,7 +8,7 @@ Base = declarative_base()
 
 class Box(Base):
     __tablename__ = "boxes"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Identity(), primary_key=True)
     name = Column(String, nullable=False)
     photo = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -17,7 +17,7 @@ class Box(Base):
 
 class Item(Base):
     __tablename__ = "items"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Identity(), primary_key=True)
     name = Column(String, nullable=False)
     photo = Column(String)
     quantity = Column(Integer, default=1)
@@ -27,7 +27,6 @@ class Item(Base):
 DATABASE_URL = os.environ.get("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine, expire_on_commit=False)
-Base = declarative_base()
 
 def create_box(box_name, photo=None):
     with Session() as session:
